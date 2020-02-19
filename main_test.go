@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"os"
 	"testing"
+	"github.com/stretchr/testify/require"
 )
 
 var testSortInput = `JS
@@ -66,9 +67,7 @@ func TestSort(t *testing.T) {
 				"", false, 1)
 
 	result := out.String()
-	if result != testSortResult {
-		t.Errorf("test sort failed")
-	}
+	require.Equal(t, result, testSortResult, "test sort failed")
 }
 
 func TestSortWithOnlyUnique(t *testing.T) {
@@ -79,9 +78,7 @@ func TestSortWithOnlyUnique(t *testing.T) {
 		"", false, 1)
 
 	result := out.String()
-	if result != testSortWithOnlyUniqueResult {
-		t.Errorf("test sort with only unique failed")
-	}
+	require.Equal(t, result, testSortWithOnlyUniqueResult, "test sort with only unique failed")
 }
 
 func TestReverseSort(t *testing.T) {
@@ -92,9 +89,7 @@ func TestReverseSort(t *testing.T) {
 		"", false, 1)
 
 	result := out.String()
-	if result != testReverseSortResult {
-		t.Errorf("test reverse sort failed")
-	}
+	require.Equal(t, result, testReverseSortResult, "test reverse sort failed")
 }
 
 func TestNumSort(t *testing.T) {
@@ -105,9 +100,7 @@ func TestNumSort(t *testing.T) {
 		"", true, 1)
 
 	result := out.String()
-	if result != testNumSortResult {
-		t.Errorf("test num sort failed")
-	}
+	require.Equal(t, result, testNumSortResult, "test num sort failed")
 }
 
 func TestSortByColumn(t *testing.T) {
@@ -118,9 +111,7 @@ func TestSortByColumn(t *testing.T) {
 		"", false, 2)
 
 	result := out.String()
-	if result != testSortByColumnResult {
-		t.Errorf("test num sort failed")
-	}
+	require.Equal(t, result, testSortByColumnResult, "test sort by column failed")
 }
 
 func TestSortToFile(t *testing.T) {
@@ -142,8 +133,5 @@ func TestSortToFile(t *testing.T) {
 		result = result + scanner.Text() + "\n"
 	}
 
-	if result != testSortByColumnResult {
-		t.Errorf("test sort to file failed")
-		t.Errorf(result)
-	}
+	require.Equal(t, result, testSortByColumnResult, "test sort to file failed")
 }

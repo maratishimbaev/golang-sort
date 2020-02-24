@@ -9,117 +9,110 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-var testSortInput = `JS
-Go
-C++
-Go
-Python`
+var testSortInput = []string{"JS", "Go", "C++", "Go", "Python"}
 
-var testSortResult = `C++
-Go
-Go
-JS
-Python
-`
+var testSortResult = []string{"C++", "Go", "Go", "JS", "Python"}
 
-var testSortWithOnlyUniqueResult = `C++
-Go
-JS
-Python
-`
+var testSortWithOnlyUniqueResult = []string{"C++", "Go", "JS", "Python"}
 
-var testReverseSortResult = `Python
-JS
-Go
-Go
-C++
-`
+var testReverseSortResult = []string{"Python", "JS", "Go", "Go", "C++"}
 
-var testNumSortInput = `3
-2
-5
-1
-4`
+var testNumSortInput = []string{"3", "2", "5", "1", "4"}
 
-var testNumSortResult = `1
-2
-3
-4
-5
-`
+var testNumSortResult = []string{"1", "2", "3", "4", "5"}
 
-var testSortByColumnInput = `zzz ddd
+var testSortByColumnInput = []string{"zzz ddd", "yyy bbb", "www aaa", "qqq ccc"}
+
+var testSortByColumnResult = []string{"www aaa", "yyy bbb", "qqq ccc", "zzz ddd"}
+
+var testSortToFileInput = `zzz ddd
 yyy bbb
 www aaa
 qqq ccc`
 
-var testSortByColumnResult = `www aaa
+var testSortToFileResult = `www aaa
 yyy bbb
 qqq ccc
 zzz ddd
 `
 
 func TestSort(t *testing.T) {
-	in := bytes.NewBufferString(testSortInput)
-	out := bytes.NewBuffer(nil)
-	sortStrings(in, out,
-				false, false, false,
-				"", false, 1)
+	sortOptions := SortOptions{
+		IgnoreCase:  false,
+		OnlyUnique:  false,
+		IsReverse:   false,
+		OutFileName: "",
+		IsNum:       false,
+		ColNum:      1,
+	}
 
-	result := out.String()
-	require.Equal(t, result, testSortResult, "test sort failed")
+	require.Equal(t, sortStrings(testSortInput, sortOptions), testSortResult, "test sort failed")
 }
 
 func TestSortWithOnlyUnique(t *testing.T) {
-	in := bytes.NewBufferString(testSortInput)
-	out := bytes.NewBuffer(nil)
-	sortStrings(in, out,
-		false, true, false,
-		"", false, 1)
+	sortOptions := SortOptions{
+		IgnoreCase:  false,
+		OnlyUnique:  true,
+		IsReverse:   false,
+		OutFileName: "",
+		IsNum:       false,
+		ColNum:      1,
+	}
 
-	result := out.String()
-	require.Equal(t, result, testSortWithOnlyUniqueResult, "test sort with only unique failed")
+	require.Equal(t, sortStrings(testSortInput, sortOptions), testSortWithOnlyUniqueResult, "test sort with only unique failed")
 }
 
 func TestReverseSort(t *testing.T) {
-	in := bytes.NewBufferString(testSortInput)
-	out := bytes.NewBuffer(nil)
-	sortStrings(in, out,
-		false, false, true,
-		"", false, 1)
+	sortOptions := SortOptions{
+		IgnoreCase:  false,
+		OnlyUnique:  false,
+		IsReverse:   true,
+		OutFileName: "",
+		IsNum:       false,
+		ColNum:      1,
+	}
 
-	result := out.String()
-	require.Equal(t, result, testReverseSortResult, "test reverse sort failed")
+	require.Equal(t, sortStrings(testSortInput, sortOptions), testReverseSortResult, "test reverse sort failed")
 }
 
 func TestNumSort(t *testing.T) {
-	in := bytes.NewBufferString(testNumSortInput)
-	out := bytes.NewBuffer(nil)
-	sortStrings(in, out,
-		false, false, false,
-		"", true, 1)
+	sortOptions := SortOptions{
+		IgnoreCase:  false,
+		OnlyUnique:  false,
+		IsReverse:   false,
+		OutFileName: "",
+		IsNum:       true,
+		ColNum:      1,
+	}
 
-	result := out.String()
-	require.Equal(t, result, testNumSortResult, "test num sort failed")
+	require.Equal(t, sortStrings(testNumSortInput, sortOptions), testNumSortResult, "test num sort failed")
 }
 
 func TestSortByColumn(t *testing.T) {
-	in := bytes.NewBufferString(testSortByColumnInput)
-	out := bytes.NewBuffer(nil)
-	sortStrings(in, out,
-		false, false, false,
-		"", false, 2)
-
-	result := out.String()
-	require.Equal(t, result, testSortByColumnResult, "test sort by column failed")
+	sortOptions := SortOptions{
+		IgnoreCase:  false,
+		OnlyUnique:  false,
+		IsReverse:   false,
+		OutFileName: "",
+		IsNum:       false,
+		ColNum:      2,
+	}
+	require.Equal(t, sortStrings(testSortByColumnInput, sortOptions), testSortByColumnResult, "test sort by column failed")
 }
 
 func TestSortToFile(t *testing.T) {
-	in := bytes.NewBufferString(testSortByColumnInput)
-	out := bytes.NewBuffer(nil)
-	sortStrings(in, out,
-		false, false, false,
-		"log.txt", false, 2)
+	in := bytes.NewBufferString(testSortToFileInput)
+
+	sortOptions := SortOptions{
+		IgnoreCase:  false,
+		OnlyUnique:  false,
+		IsReverse:   false,
+		OutFileName: "log.txt",
+		IsNum:       false,
+		ColNum:      2,
+	}
+
+	unixSort(in, sortOptions)
 
 	outFile, err := os.Open("log.txt")
 	if err != nil {
@@ -133,5 +126,5 @@ func TestSortToFile(t *testing.T) {
 		result = result + scanner.Text() + "\n"
 	}
 
-	require.Equal(t, result, testSortByColumnResult, "test sort to file failed")
+	require.Equal(t, result, testSortToFileResult, "test sort to file failed")
 }
